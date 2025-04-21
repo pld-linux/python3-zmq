@@ -30,6 +30,7 @@ BuildRequires:	python3-gevent
 BuildRequires:	python3-pytest
 BuildRequires:	python3-tornado
 %endif
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 2.044
 BuildRequires:	zeromq-devel >= %{zeromq_ver}
@@ -72,6 +73,7 @@ Pliki nagłowkowe dla Py0MQ (wersja dla Pythona 3).
 Summary:	API documentation for Py0MQ module
 Summary(pl.UTF-8):	Dokumentacja API modułu Py0MQ
 Group:		Documentation
+BuildArch:	noarch
 
 %description apidocs
 API documentation for Py0MQ module.
