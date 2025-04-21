@@ -85,6 +85,7 @@ Dokumentacja API modułu Py0MQ.
 %setup -qn %{module}-%{version}
 
 %build
+export SKBUILD_INSTALL_STRIP=false
 %py3_build_pyproject
 
 %if %{with doc}
