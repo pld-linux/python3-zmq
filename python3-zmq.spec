@@ -4,21 +4,22 @@
 %bcond_with	tests	# unit tests (using network? and finally hang)
 
 %define		module		pyzmq
-%define		zeromq_ver	4.3.2
+%define		zeromq_ver	4.3.5
 Summary:	Py0MQ - 0MQ bindings for Python 3
 Summary(en.UTF-8):	Py0MQ - ØMQ bindings for Python 3
 Summary(pl.UTF-8):	Py0MQ - wiązania biblioteki ØMQ dla Pythona 3
 Name:		python3-zmq
-Version:	26.4.0
+Version:	27.1.0
 Release:	1
 License:	BSD
 Group:		Development/Languages/Python
 #Source0Download: https://github.com/zeromq/pyzmq/releases
-Source0:	https://github.com/zeromq/pyzmq/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	1262271b8ede1a6f8922c35b11dd27cd
+Source0:	https://github.com/zeromq/pyzmq/archive/v%{version}/pyzmq-%{version}.tar.gz
+# Source0-md5:	d8de227585b2559c076a96f6713d9b54
 URL:		http://github.com/zeromq/pyzmq
-BuildRequires:	cmake >= 3.14
+BuildRequires:	cmake >= 3.15
 BuildRequires:	ninja
+BuildRequires:	pkgconfig
 BuildRequires:	python3-Cython >= 3.0.0
 BuildRequires:	python3-build
 BuildRequires:	python3-devel >= 1:3.8
@@ -28,11 +29,15 @@ BuildRequires:	python3-scikit-build-core >= 0.10
 %if %{with tests}
 BuildRequires:	python3-gevent
 BuildRequires:	python3-pytest
+BuildRequires:	python3-pytest-asyncio >= 0.17
+BuildRequires:	python3-pytest-rerunfailures
+BuildRequires:	python3-setuptools
 BuildRequires:	python3-tornado
 %endif
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 2.044
+BuildRequires:	unzip
 BuildRequires:	zeromq-devel >= %{zeromq_ver}
 %if %{with doc}
 BuildRequires:	python3-Cython >= 3.0.0
@@ -88,8 +93,16 @@ Dokumentacja API modułu Py0MQ.
 export SKBUILD_INSTALL_STRIP=false
 %py3_build_pyproject
 
+%if %{with doc} || %{with tests}
+%{__unzip} -qo build-3/*.whl -d build-3/build-path
+%endif
+
+%if %{with tests}
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+%{__python3} -m pytest -o pythonpath="$(pwd)/build-3/build-path $(pwd)/tests" tests
+%endif
+
 %if %{with doc}
-%__unzip -qo build-3/*.whl -d build-3/build-path
 PYTHONPATH=$(pwd)/build-3/build-path \
 %{__make} -C docs html \
 	SPHINXBUILD=sphinx-build-3
